@@ -31,8 +31,9 @@ public class UserServiceImpl implements UserService {
         userDTO.setId(generateUserId());
 
         // Validate the userDTO before saving
-        if (!validateUser(userDTO)) {
-            throw new IllegalArgumentException("Invalid user data");
+        String validateUser = validateUser(userDTO);
+        if (validateUser!=null) {
+            throw new IllegalArgumentException(validateUser);
         }
         userRepository.save(modelMapper.map(userDTO, User.class));
     }
@@ -45,8 +46,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(String id, UserDTO userDTO) {
-        if (!validateUser(userDTO)) {
-            throw new IllegalArgumentException("Invalid user data");
+        String validateUser = validateUser(userDTO);
+        if (validateUser!=null) {
+            throw new IllegalArgumentException(validateUser);
         }
 
         userRepository.findById(id).ifPresentOrElse(user -> {
@@ -79,8 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean validateUser(UserDTO userDTO) {
-
+    public String validateUser(UserDTO userDTO) {
         String id = userDTO.getId();
         String name = userDTO.getName();
         String email = userDTO.getEmail();
@@ -91,40 +92,56 @@ public class UserServiceImpl implements UserService {
         String phoneNumber = userDTO.getPhoneNumber();
 
         if (email == null || email.isEmpty() || !email.matches("^[\\w-_.+]+@[\\w-]+\\.[a-zA-Z]{2,}$")) {
-            return false;
+            return "Invalid email format.";
         }
 
-        if (password == null || password.isEmpty() || password.length() < 8 ||
-                !password.matches(".*[A-Z].*") ||         // At least one uppercase
-                !password.matches(".*[a-z].*") ||         // At least one lowercase
-                !password.matches(".*\\d.*") ||           // At least one digit
-                !password.equals(confirmPassword)) {      // Passwords must match
-            return false;
+        if (password == null || password.isEmpty()) {
+            return "Password cannot be empty.";
+        }
+
+        if (password.length() < 8) {
+            return "Password must be at least 8 characters.";
+        }
+
+        if (!password.matches(".*[A-Z].*")) {
+            return "Password must contain at least one uppercase letter.";
+        }
+
+        if (!password.matches(".*[a-z].*")) {
+            return "Password must contain at least one lowercase letter.";
+        }
+
+        if (!password.matches(".*\\d.*")) {
+            return "Password must contain at least one digit.";
+        }
+
+        if (!password.equals(confirmPassword)) {
+            return "Passwords do not match.";
         }
 
         if (name == null || name.isEmpty() || name.length() < 3) {
-            return false;
+            return "Name must be at least 3 characters.";
         }
 
         if (dateOfBirth == null || !dateOfBirth.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            return false;
+            return "Date of Birth must be in the format YYYY-MM-DD.";
         }
 
         if (address == null || address.isEmpty() || address.length() < 10) {
-            return false;
+            return "Address must be at least 10 characters.";
         }
 
         if (phoneNumber == null || !phoneNumber.matches("^\\d{10}$")) {
-            return false;
+            return "Phone number must be exactly 10 digits.";
         }
 
-        if (id == null) {
-            System.out.println("efwsf");
-            return userRepository.findByEmail(email) == null;
+        if (id == null && userRepository.findByEmail(email) != null) {
+            return "Email is already in use.";
         }
 
-        return true;
+        return null;  // null means validation passed
     }
+
 
     //    id generation
     public String generateUserId() {

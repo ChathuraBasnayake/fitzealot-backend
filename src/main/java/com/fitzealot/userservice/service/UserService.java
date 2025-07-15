@@ -17,5 +17,5 @@ public interface UserService {
 
     UserDTO getUserByEmail(String email);
 
-    boolean validateUser(UserDTO userDTO);
+    String validateUser(UserDTO userDTO);
 }
