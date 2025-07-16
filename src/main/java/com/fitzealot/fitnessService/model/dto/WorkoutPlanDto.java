@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class WorkoutPlanDto {
 
-    private Long id;
+    private Long userId;
 
     // **NEW FIELD ADDED** to match the database table
     private int durationWeeks;

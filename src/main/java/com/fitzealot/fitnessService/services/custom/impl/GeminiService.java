@@ -1,16 +1,15 @@
 package com.fitzealot.fitnessService.services.custom.impl;
 
-import com.fitzealot.fitnessService.model.dto.GeminiDailyPlanDto;
-import com.fitzealot.fitnessService.model.dto.GeminiWorkoutPlanDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fitzealot.fitnessService.model.dto.WorkoutRequest;
+import com.fitzealot.fitnessService.model.dto.gemini.GeminiDailyPlanDto;
+import com.fitzealot.fitnessService.model.dto.gemini.GeminiWorkoutPlanDto;
 import com.fitzealot.fitnessService.model.entity.DailyWorkout;
 import com.fitzealot.fitnessService.model.entity.ExerciseDetail;
 import com.fitzealot.fitnessService.model.entity.WorkoutPlan;
 import com.fitzealot.fitnessService.repository.WorkoutPlanRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -156,46 +155,46 @@ public class GeminiService {
      */
     private String createPrompt(WorkoutRequest request) {
         return String.format("""
-            You are an expert personal trainer and fitness AI. Your task is to create a detailed, personalized weekly workout plan based on the user's profile.
-
-            **User Profile:**
-            - Height: %.1f cm
-            - Weight: %.1f kg
-            - Primary Fitness Goal: "%s"
-            - Current Activity Level: "%s"
-            - Preferred Workout Time: %s
-            - Workout Days Per Week: %d
-            - description: "%s"
-
-            **Instructions:**
-            1.  Create a plan for a full 7-day week.
-            2.  The number of workout days must exactly match the user's request. The remaining days are rest days.
-            3.  Logically distribute the workout and rest days.
-            4.  For each workout day, provide a clear "workoutType" (e.g., "Upper Body Strength", "Cardio & Core").
-            5.  Include a brief "warmUp" routine with 2-3 simple exercises.
-            6.  List 4-6 "exercises", each with a specified number of "sets" and a "reps" range (e.g., "8-12 reps") or duration.
-            7.  Include a "coolDown" routine with 2-3 static stretches.
-            8.  For rest days, set "isRestDay" to true and you can optionally suggest a light activity.
-
-            **Output Format:**
-            Respond ONLY with a valid JSON object. Do not include any text, markdown, or explanations outside of the JSON. The structure must follow this exact schema:
-            {
-              "weeklyPlan": [
-                {
-                  "dayOfWeek": "Monday",
-                  "isRestDay": boolean,
-                  "workoutType": "string | null",
-                  "warmUp": ["string", ...],
-                  "exercises": [
-                    { "name": "string", "sets": number, "reps": "string" },
-                    ...
-                  ],
-                  "coolDown": ["string", ...]
-                },
-                ...
-              ]
-            }
-        """,
+                            You are an expert personal trainer and fitness AI. Your task is to create a detailed, personalized weekly workout plan based on the user's profile.
+                        
+                            **User Profile:**
+                            - Height: %.1f cm
+                            - Weight: %.1f kg
+                            - Primary Fitness Goal: "%s"
+                            - Current Activity Level: "%s"
+                            - Preferred Workout Time: %s
+                            - Workout Days Per Week: %d
+                            - description: "%s"
+                        
+                            **Instructions:**
+                            1.  Create a plan for a full 7-day week.
+                            2.  The number of workout days must exactly match the user's request. The remaining days are rest days.
+                            3.  Logically distribute the workout and rest days.
+                            4.  For each workout day, provide a clear "workoutType" (e.g., "Upper Body Strength", "Cardio & Core").
+                            5.  Include a brief "warmUp" routine with 2-3 simple exercises.
+                            6.  List 4-6 "exercises", each with a specified number of "sets" and a "reps" range (e.g., "8-12 reps") or duration.
+                            7.  Include a "coolDown" routine with 2-3 static stretches.
+                            8.  For rest days, set "isRestDay" to true and you can optionally suggest a light activity.
+                        
+                            **Output Format:**
+                            Respond ONLY with a valid JSON object. Do not include any text, markdown, or explanations outside of the JSON. The structure must follow this exact schema:
+                            {
+                              "weeklyPlan": [
+                                {
+                                  "dayOfWeek": "Monday",
+                                  "isRestDay": boolean,
+                                  "workoutType": "string | null",
+                                  "warmUp": ["string", ...],
+                                  "exercises": [
+                                    { "name": "string", "sets": number, "reps": "string" },
+                                    ...
+                                  ],
+                                  "coolDown": ["string", ...]
+                                },
+                                ...
+                              ]
+                            }
+                        """,
                 request.heightCm(),
                 request.weightKg(),
                 request.fitnessGoal(),

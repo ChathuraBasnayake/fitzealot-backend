@@ -1,18 +1,18 @@
 package com.fitzealot.fitnessService.model.entity;
 
-import com.fitzealot.fitnessService.model.entity.DailyWorkout;
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
 @Entity
 @Data
 public class WorkoutPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
     // **NEW FIELD ADDED** to match the database table
     private int durationWeeks;

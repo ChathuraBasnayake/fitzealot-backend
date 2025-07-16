@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record WorkoutRequest(
+        String userId,
         double heightCm,
         double weightKg,
         String fitnessGoal,
@@ -11,4 +12,5 @@ public record WorkoutRequest(
         String preferredWorkoutTime,
         int workoutDaysPerWeek,
         String description
-) {}
+) {
+}

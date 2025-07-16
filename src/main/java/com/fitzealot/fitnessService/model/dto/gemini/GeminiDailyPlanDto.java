@@ -1,4 +1,4 @@
-package com.fitzealot.fitnessService.model.dto;
+package com.fitzealot.fitnessService.model.dto.gemini;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,4 +12,5 @@ public record GeminiDailyPlanDto(
         List<String> warmUp,
         List<GeminiExerciseDto> exercises,
         List<String> coolDown
-) {}
+) {
+}
