@@ -1,4 +1,4 @@
-package com.fitzealot.fitnessService.model.dto;
+package com.fitzealot.fitnessService.model.dto.gemini;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

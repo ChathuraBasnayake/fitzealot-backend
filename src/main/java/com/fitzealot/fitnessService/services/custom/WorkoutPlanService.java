@@ -1,16 +1,20 @@
 package com.fitzealot.fitnessService.services.custom;
 
 import com.fitzealot.fitnessService.model.dto.WorkoutPlanDto;
-import com.fitzealot.fitnessService.model.dto.WorkoutRequest;
-import org.springframework.http.ResponseEntity;
-import reactor.core.publisher.Mono;
+import com.fitzealot.fitnessService.model.dto.gemini.WorkoutRequest;
+
+import java.util.List;
 
 public interface WorkoutPlanService {
 
-    Mono<WorkoutPlanDto> generateAndSaveWorkoutPlan(WorkoutRequest request);
+    WorkoutPlanDto generateAndSaveWorkoutPlan(WorkoutRequest request);
 
 
-    Mono<WorkoutPlanDto> get(String id);
+    WorkoutPlanDto get(String id);
 
-    Mono<ResponseEntity<Object>> update(String id, WorkoutPlanDto workoutPlanDto);
+    WorkoutPlanDto update(String id, WorkoutPlanDto workoutPlanDto);
+
+    List<WorkoutPlanDto> getAll();
+
+    void delete(String id);
 }
