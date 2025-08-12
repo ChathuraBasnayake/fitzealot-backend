@@ -1,10 +1,12 @@
 package com.fitzealot.healthmetricsservice.service;
 
+import com.fitzealot.healthmetricsservice.model.dto.CalorieCalculationRequestDTO;
+
 public interface HealthMetricService {
 
-    double calculateBMI(double weightKg, double heightCm);
-    int calculateCalories(Long userId);
-    double calculateProtein(Long userId);
+    Double calculateBMI(double weightKg, double heightMeters);
 
+    Double calculateBMR(CalorieCalculationRequestDTO dto);
 
+    Double calculateProtein(Double weightKg);
 }
