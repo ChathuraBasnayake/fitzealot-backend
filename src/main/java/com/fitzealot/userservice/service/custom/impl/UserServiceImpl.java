@@ -207,15 +207,16 @@ public class UserServiceImpl implements UserService {
         return UUID.randomUUID().toString();
     }
 
-    public String verify(UserDTO user) {
+    public String verify(String username,String password) {
 
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
 
         if (authenticate.isAuthenticated())
-            return jwtService.generateToken(user.getUsername());
+            return jwtService.generateToken(username);
 
         return "User is not authenticated";
 
     }
+
 
 }

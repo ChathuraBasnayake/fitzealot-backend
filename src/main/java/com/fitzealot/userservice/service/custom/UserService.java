@@ -23,5 +23,6 @@ public interface UserService {
 
     void forgotPassword(String password, String confirmPassword, String newPassword);
 
-    String verify(UserDTO users);
+    String verify(String username,String password);
+
 }

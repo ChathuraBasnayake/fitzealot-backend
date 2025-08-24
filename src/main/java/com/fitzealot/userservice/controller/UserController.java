@@ -17,6 +17,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> createUser(@RequestBody UserDTO userDTO) {
+        System.out.println(userDTO);
         userService.createUser(userDTO);
         return ResponseEntity.ok().build();
     }
@@ -71,9 +72,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserDTO users){
+    public String login(@RequestParam String username, @RequestParam String password) {
 
-        return userService.verify(users);
+        return userService.verify(username, password);
 
     }
 
