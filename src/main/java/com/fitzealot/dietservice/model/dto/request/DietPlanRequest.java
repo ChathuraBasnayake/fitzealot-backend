@@ -6,7 +6,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DietPlanRequest(
-        String userId,
+        String username,
         double heightCm,
         double weightKg,
         String fitnessGoal,

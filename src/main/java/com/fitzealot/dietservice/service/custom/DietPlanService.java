@@ -4,7 +4,6 @@ import com.fitzealot.dietservice.model.dto.request.DietPlanRequest;
 import com.fitzealot.dietservice.model.dto.response.DietPlanResponse;
 import jakarta.validation.Valid;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,10 +25,12 @@ public interface DietPlanService {
     Optional<DietPlanResponse> getDietPlanById(UUID id);
 
     /**
-     * Retrieves all diet plans for a specific user ID, mapped to DietPlanResponse DTOs.
+     * Retrieves the latest diet plan for a specific username.
      *
-     * @param userId The ID of the user.
-     * @return A list of DietPlanResponse objects.
+     * @param username The username to search by.
+     * @return A DietPlanResponse object or null if not found.
      */
-    List<DietPlanResponse> getDietPlansByUserId(String userId);
+    DietPlanResponse getDietPlanByUsername(String username);
+
+    DietPlanResponse update(@Valid DietPlanRequest dietPlanRequest);
 }

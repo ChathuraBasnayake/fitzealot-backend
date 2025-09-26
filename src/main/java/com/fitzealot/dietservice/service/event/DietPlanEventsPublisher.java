@@ -24,21 +24,21 @@ public class DietPlanEventsPublisher {
 
 
     public void publishDietPlanRequestedEvent(DietPlanRequest request) {
-        log.info("Publishing DietPlanRequestedEvent for user: {}", request.userId());
+        log.info("Publishing DietPlanRequestedEvent for user: {}", request.username());
         eventPublisher.publishEvent(request); // For demonstration with Spring's internal events
-        // For Kafka: kafkaTemplate.send(DIET_PLAN_REQUEST_TOPIC, request.userId(), request);
+        // For Kafka: kafkaTemplate.send(DIET_PLAN_REQUEST_TOPIC, request.username(), request);
     }
 
     public void publishDietPlanGeneratedEvent(String userId, UUID dietPlanId, String status) {
         log.info("Publishing DietPlanGeneratedEvent for user: {}, planId: {}", userId, dietPlanId);
         eventPublisher.publishEvent(new DietPlanGeneratedEvent(userId, dietPlanId, status, "Diet plan generated successfully!"));
-        // For Kafka: kafkaTemplate.send(DIET_PLAN_GENERATED_TOPIC, userId, Map.of("userId", userId, "dietPlanId", dietPlanId, "status", status));
+        // For Kafka: kafkaTemplate.send(DIET_PLAN_GENERATED_TOPIC, username, Map.of("username", username, "dietPlanId", dietPlanId, "status", status));
     }
 
     public void publishDietPlanGenerationFailedEvent(String userId, String reason) {
         log.warn("Publishing DietPlanGenerationFailedEvent for user: {}, reason: {}", userId, reason);
         eventPublisher.publishEvent(new DietPlanGenerationFailedEvent(userId, UUID.randomUUID().toString(), reason, null));
-        // For Kafka: kafkaTemplate.send(DIET_PLAN_GENERATION_FAILED_TOPIC, userId, Map.of("userId", userId, "reason", reason));
+        // For Kafka: kafkaTemplate.send(DIET_PLAN_GENERATION_FAILED_TOPIC, username, Map.of("username", username, "reason", reason));
     }
 
     // --- Example Event DTOs for internal Spring events (or for direct broker publishing) ---

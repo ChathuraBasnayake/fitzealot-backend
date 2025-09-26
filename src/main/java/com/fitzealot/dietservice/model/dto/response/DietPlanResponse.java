@@ -9,7 +9,7 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DietPlanResponse(
         UUID id,
-        String userId,
+        String username,
         LocalDate generationDate,
         String fitnessGoal,
         String activityLevel,

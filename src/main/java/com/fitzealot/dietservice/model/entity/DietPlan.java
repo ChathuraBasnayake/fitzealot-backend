@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,8 +24,8 @@ public class DietPlan {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String userId;
+    @Column(nullable = false,unique = true)
+    private String username;
 
     @Column(nullable = false)
     private LocalDate generationDate;
@@ -60,6 +61,16 @@ public class DietPlan {
 
     @PrePersist
     protected void onCreate() {
+        if (generationDate == null) {
+            generationDate = LocalDate.now();
+        }
+        if (status == null) {
+            status = DietPlanStatus.GENERATED;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
         if (generationDate == null) {
             generationDate = LocalDate.now();
         }

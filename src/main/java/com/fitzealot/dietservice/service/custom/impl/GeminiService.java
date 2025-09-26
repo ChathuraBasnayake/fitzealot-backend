@@ -75,9 +75,16 @@ public class GeminiService {
             GeminiDietPlanDto dto = parseJsonToDto(jsonBody);
 
             // 4. Map DTO to Entity and save
-            DietPlan plan = mapDtoToEntity(dto, request.userId(), request);
+            DietPlan plan = mapDtoToEntity(dto, request.username(), request);
+            DietPlan existingPlan = dietPlanRepository.findByUsername(request.username());
+
+            if (existingPlan != null) {
+                plan.setId(existingPlan.getId());
+            }
 
             return dietPlanRepository.save(plan);
+
+
         } catch (RestClientException e) {
             log.error("API call to Gemini failed for diet plan generation", e);
             throw new ServiceException("Failed to communicate with Gemini API for diet plan", e);
@@ -104,60 +111,60 @@ public class GeminiService {
                 : "None";
 
         return String.format("""
-                You are an expert nutritionist and diet planner AI. Your task is to create a detailed, personalized weekly diet plan based on the user's profile and preferences.
-
-                **User Profile:**
-                - Height: %.1f cm
-                - Weight: %.1f kg
-                - Primary Fitness Goal: "%s"
-                - Current Activity Level: "%s"
-                - Meals Per Day: %d
-                - Dietary Preferences: %s
-                - Allergies: %s
-                - Description: "%s"
-
-                **Instructions:**
-                1. Create a balanced diet plan for a full 7-day week.
-                2. Ensure the plan aligns with the user's "Primary Fitness Goal" (e.g., calorie surplus for muscle gain, deficit for weight loss).
-                3. The number of meals per day should strictly adhere to the "Meals Per Day" specified by the user.
-                4. Incorporate "Dietary Preferences" and avoid "Allergies". If a preference/allergy makes a plan impossible or very restrictive, provide the best possible alternative or a note about it.
-                5. For each day, include meals for "Breakfast", "Lunch", "Dinner", and any specified snacks (if "Meals Per Day" allows).
-                6. For each meal, provide:
-                    - "mealType" (e.g., "Breakfast", "Lunch", "Dinner", "Snack 1")
-                    - "name" of the dish (e.g., "Grilled Chicken Salad")
-                    - "description" (a brief overview of the meal)
-                    - "ingredients" (a list of main ingredients with approximate quantities)
-                    - "preparationInstructions" (brief, actionable steps to prepare)
-                    - "approxCalories" (estimated total calories for that meal)
-                    - "approxMacros" (estimated protein, carbs, fat in grams, e.g., "Protein: 30g, Carbs: 40g, Fat: 15g")
-                7. For any rest days (which you can infer based on the plan's overall balance or if a specific prompt indicated it, though for diet it's less common), you can mark 'isRestDay' as true and suggest slightly lighter options or focus on recovery nutrition. If no specific rest day is implied, 'isRestDay' should be false.
-                8. Include "notes" for each day, providing general tips or advice for that day's nutrition.
-
-                **Output Format:**
-                Respond ONLY with a valid JSON object. Do not include any text, markdown, or explanations outside of the JSON. The structure must follow this exact schema:
-                {
-                  "weeklyDietPlan": [
-                    {
-                      "dayOfWeek": "Monday",
-                      "isRestDay": boolean, // true if it's a lighter intake day / flexible day, false otherwise
-                      "mealPlan": [
+                        You are an expert nutritionist and diet planner AI. Your task is to create a detailed, personalized weekly diet plan based on the user's profile and preferences.
+                        
+                        **User Profile:**
+                        - Height: %.1f cm
+                        - Weight: %.1f kg
+                        - Primary Fitness Goal: "%s"
+                        - Current Activity Level: "%s"
+                        - Meals Per Day: %d
+                        - Dietary Preferences: %s
+                        - Allergies: %s
+                        - Description: "%s"
+                        
+                        **Instructions:**
+                        1. Create a balanced diet plan for a full 7-day week.
+                        2. Ensure the plan aligns with the user's "Primary Fitness Goal" (e.g., calorie surplus for muscle gain, deficit for weight loss).
+                        3. The number of meals per day should strictly adhere to the "Meals Per Day" specified by the user.
+                        4. Incorporate "Dietary Preferences" and avoid "Allergies". If a preference/allergy makes a plan impossible or very restrictive, provide the best possible alternative or a note about it.
+                        5. For each day, include meals for "Breakfast", "Lunch", "Dinner", and any specified snacks (if "Meals Per Day" allows).
+                        6. For each meal, provide:
+                            - "mealType" (e.g., "Breakfast", "Lunch", "Dinner", "Snack 1")
+                            - "name" of the dish (e.g., "Grilled Chicken Salad")
+                            - "description" (a brief overview of the meal)
+                            - "ingredients" (a list of main ingredients with approximate quantities)
+                            - "preparationInstructions" (brief, actionable steps to prepare)
+                            - "approxCalories" (estimated total calories for that meal)
+                            - "approxMacros" (estimated protein, carbs, fat in grams, e.g., "Protein: 30g, Carbs: 40g, Fat: 15g")
+                        7. For any rest days (which you can infer based on the plan's overall balance or if a specific prompt indicated it, though for diet it's less common), you can mark 'isRestDay' as true and suggest slightly lighter options or focus on recovery nutrition. If no specific rest day is implied, 'isRestDay' should be false.
+                        8. Include "notes" for each day, providing general tips or advice for that day's nutrition.
+                        
+                        **Output Format:**
+                        Respond ONLY with a valid JSON object. Do not include any text, markdown, or explanations outside of the JSON. The structure must follow this exact schema:
                         {
-                          "mealType": "string",
-                          "name": "string",
-                          "description": "string",
-                          "ingredients": ["string", ...],
-                          "preparationInstructions": ["string", ...],
-                          "approxCalories": double,
-                          "approxMacros": { "protein": "string", "carbs": "string", "fat": "string" }
-                        },
-                        ...
-                      ],
-                      "notes": "string"
-                    },
-                    ...
-                  ]
-                }
-                """,
+                          "weeklyDietPlan": [
+                            {
+                              "dayOfWeek": "Monday",
+                              "isRestDay": boolean, // true if it's a lighter intake day / flexible day, false otherwise
+                              "mealPlan": [
+                                {
+                                  "mealType": "string",
+                                  "name": "string",
+                                  "description": "string",
+                                  "ingredients": ["string", ...],
+                                  "preparationInstructions": ["string", ...],
+                                  "approxCalories": double,
+                                  "approxMacros": { "protein": "string", "carbs": "string", "fat": "string" }
+                                },
+                                ...
+                              ],
+                              "notes": "string"
+                            },
+                            ...
+                          ]
+                        }
+                        """,
                 request.heightCm(),
                 request.weightKg(),
                 request.fitnessGoal(),
@@ -174,13 +181,13 @@ public class GeminiService {
      */
     private String createGeminiRequestBody(String prompt) {
         return String.format("""
-                {
-                    "contents": [{
-                        "parts": [{
-                            "text": "%s"
-                        }]
-                    }]
-                }""",
+                        {
+                            "contents": [{
+                                "parts": [{
+                                    "text": "%s"
+                                }]
+                            }]
+                        }""",
                 prompt.replace("\"", "\\\"") // Escape quotes in the prompt
         );
     }
@@ -251,7 +258,7 @@ public class GeminiService {
         }
 
         DietPlan dietPlan = new DietPlan();
-        dietPlan.setUserId(userId);
+        dietPlan.setUsername(userId);
         // Copy relevant details from the original request
         dietPlan.setFitnessGoal(originalRequest.fitnessGoal());
         dietPlan.setActivityLevel(originalRequest.activityLevel());

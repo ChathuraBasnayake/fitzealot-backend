@@ -11,10 +11,10 @@ import com.fitzealot.dietservice.model.entity.DietPlan;
 import com.fitzealot.dietservice.model.entity.Meal;
 import com.fitzealot.dietservice.repository.DietPlanRepository;
 import com.fitzealot.dietservice.service.custom.DietPlanService;
-import com.fitzealot.dietservice.service.custom.impl.GeminiService;
 import com.fitzealot.dietservice.service.event.DietPlanEventsPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +44,7 @@ public class DietPlanServiceImpl implements DietPlanService {
     @Override
     @Transactional // Ensure this operation is atomic: generate + save
     public DietPlanResponse createDietPlan(DietPlanRequest dietPlanRequest) {
-        log.info("Creating diet plan for user: {}", dietPlanRequest.userId());
+        log.info("Creating diet plan for user: {}", dietPlanRequest.username());
         try {
             // 1. Call GeminiService to generate and save the DietPlan entity
             //    GeminiService now returns the DietPlan entity.
@@ -55,16 +55,16 @@ public class DietPlanServiceImpl implements DietPlanService {
 
             // Optional: Publish a "plan generated" event for audit/notifications
             // This event is *not* for triggering generation, but for notifying about completion.
-            eventsPublisher.publishDietPlanGeneratedEvent(dietPlanResponse.userId(), dietPlanResponse.id(), "SUCCESS_SYNCHRONOUS");
+            eventsPublisher.publishDietPlanGeneratedEvent(dietPlanResponse.username(), dietPlanResponse.id(), "SUCCESS_SYNCHRONOUS");
 
             return dietPlanResponse;
         } catch (ServiceException e) {
-            log.error("Service error during diet plan creation for user {}: {}", dietPlanRequest.userId(), e.getMessage());
-            eventsPublisher.publishDietPlanGenerationFailedEvent(dietPlanRequest.userId(), "Generation failed: " + e.getMessage());
+            log.error("Service error during diet plan creation for user {}: {}", dietPlanRequest.username(), e.getMessage());
+            eventsPublisher.publishDietPlanGenerationFailedEvent(dietPlanRequest.username(), "Generation failed: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected error during diet plan creation for user {}: {}", dietPlanRequest.userId(), e.getMessage(), e);
-            eventsPublisher.publishDietPlanGenerationFailedEvent(dietPlanRequest.userId(), "Unexpected error during generation: " + e.getMessage());
+            log.error("Unexpected error during diet plan creation for user {}: {}", dietPlanRequest.username(), e.getMessage(), e);
+            eventsPublisher.publishDietPlanGenerationFailedEvent(dietPlanRequest.username(), "Unexpected error during generation: " + e.getMessage());
             throw new ServiceException("An unexpected error occurred during diet plan creation.", e);
         }
     }
@@ -76,15 +76,39 @@ public class DietPlanServiceImpl implements DietPlanService {
                 .map(this::mapToDietPlanResponse);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<DietPlanResponse> getDietPlansByUserId(String userId) {
 
-        return  null;
-//        List<DietPlan> dietPlans = dietPlanRepository.findByUserId(userId);
-//        return dietPlans.stream()
-//                .map(this::mapToDietPlanResponse)
-//                .collect(Collectors.toList());
+    @Override
+    public DietPlanResponse update(DietPlanRequest dietPlanRequest) {
+
+        try {
+            // 1. Call GeminiService to generate and save the DietPlan entity
+            //    GeminiService now returns the DietPlan entity.
+            DietPlan generatedPlanEntity = geminiService.generateAndSaveDietPlan(dietPlanRequest);
+
+            // 2. Map the DietPlan entity to a DietPlanResponse DTO
+            DietPlanResponse dietPlanResponse = mapToDietPlanResponse(generatedPlanEntity);
+
+            // Optional: Publish a "plan generated" event for audit/notifications
+            // This event is *not* for triggering generation, but for notifying about completion.
+            eventsPublisher.publishDietPlanGeneratedEvent(dietPlanResponse.username(), dietPlanResponse.id(), "SUCCESS_SYNCHRONOUS");
+
+            return dietPlanResponse;
+        } catch (ServiceException e) {
+            log.error("Service error during diet plan creation for user {}: {}", dietPlanRequest.username(), e.getMessage());
+            eventsPublisher.publishDietPlanGenerationFailedEvent(dietPlanRequest.username(), "Generation failed: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error during diet plan creation for user {}: {}", dietPlanRequest.username(), e.getMessage(), e);
+            eventsPublisher.publishDietPlanGenerationFailedEvent(dietPlanRequest.username(), "Unexpected error during generation: " + e.getMessage());
+            throw new ServiceException("An unexpected error occurred during diet plan creation.", e);
+        }
+
+
+    }
+
+    @Override
+    public DietPlanResponse getDietPlanByUsername(String username) {
+        return mapToDietPlanResponse(dietPlanRepository.findByUsername(username));
     }
 
     // --- Private Mapping Methods (from Entity to Response DTO) ---
@@ -101,7 +125,7 @@ public class DietPlanServiceImpl implements DietPlanService {
 
         return new DietPlanResponse(
                 entity.getId(),
-                entity.getUserId(),
+                entity.getUsername(),
                 entity.getGenerationDate(),
                 entity.getFitnessGoal(),
                 entity.getActivityLevel(),

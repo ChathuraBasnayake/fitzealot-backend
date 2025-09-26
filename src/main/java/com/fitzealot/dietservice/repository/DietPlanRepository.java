@@ -9,6 +9,6 @@ import java.util.UUID;
 @Repository
 public interface DietPlanRepository extends JpaRepository<DietPlan, UUID> {
 
-    DietPlan findByUserId(String userId);
+    DietPlan findByUsername(String username);
 
 }
