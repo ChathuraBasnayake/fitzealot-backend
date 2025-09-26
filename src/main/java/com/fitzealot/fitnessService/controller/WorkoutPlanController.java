@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workout-plans")
+@RequestMapping("/workouts")
 @Validated
 public class WorkoutPlanController {
 
@@ -61,6 +62,9 @@ public class WorkoutPlanController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+
+
 
     @GetMapping("/get/{id}")
     public ResponseEntity<WorkoutPlanDto> getWorkoutPlan(@PathVariable String id) {

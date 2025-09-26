@@ -68,7 +68,9 @@ public class GeminiService {
 
             String jsonBody = extractContentFromJson(response.getBody());
             GeminiWorkoutPlanDto dto = parseJsonToDto(jsonBody);
-            WorkoutPlan plan = mapDtoToEntity(dto);
+
+            // 🎯 CORRECTED LINE: Pass the username to the mapping method
+            WorkoutPlan plan = mapDtoToEntity(dto, request.username());
 
             return workoutPlanRepository.save(plan);
         } catch (RestClientException e) {
@@ -153,12 +155,16 @@ public class GeminiService {
         }
     }
 
-    private WorkoutPlan mapDtoToEntity(GeminiWorkoutPlanDto dto) {
+    // 🎯 CORRECTED METHOD SIGNATURE: Added the username parameter
+    private WorkoutPlan mapDtoToEntity(GeminiWorkoutPlanDto dto, String username) {
         if (dto == null || dto.weeklyPlan() == null) {
             throw new IllegalArgumentException("Invalid workout plan data received");
         }
 
         WorkoutPlan plan = new WorkoutPlan();
+        // 🎯 CORRECTED LINE: Set the primary key here
+        plan.setUsername(username);
+
         plan.setWeeklyPlan(dto.weeklyPlan().stream()
                 .map(this::mapDailyDtoToEntity)
                 .toList());
@@ -223,14 +229,12 @@ public class GeminiService {
                 throw new ServiceException("No content found in Gemini response");
             }
 
-            // --- IMPORTANT CHANGE HERE ---
             // Remove markdown code block fences if they exist
             if (content.startsWith("```json") && content.endsWith("```")) {
                 content = content.substring("```json".length(), content.length() - "```".length()).trim();
-            } else if (content.startsWith("```") && content.endsWith("```")) { // Generic markdown block
+            } else if (content.startsWith("```") && content.endsWith("```")) {
                 content = content.substring("```".length(), content.length() - "```".length()).trim();
             }
-            // --- END IMPORTANT CHANGE ---
 
             return content;
         } catch (Exception e) {

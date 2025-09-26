@@ -9,9 +9,8 @@ import java.util.List;
 @Data
 public class WorkoutPlanDto {
 
-    private Long userId;
+    private String username;
 
-    // **NEW FIELD ADDED** to match the database table
     private int durationWeeks;
 
     private LocalDateTime createdAt;

@@ -5,6 +5,7 @@ import com.fitzealot.fitnessService.exception.ServiceException;
 import com.fitzealot.fitnessService.model.dto.WorkoutPlanDto;
 import com.fitzealot.fitnessService.model.dto.gemini.WorkoutRequest;
 import com.fitzealot.fitnessService.model.entity.DailyWorkout;
+import com.fitzealot.fitnessService.model.entity.WorkoutPlan;
 import com.fitzealot.fitnessService.repository.WorkoutPlanRepository;
 import com.fitzealot.fitnessService.services.custom.WorkoutPlanService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     @Override
     public WorkoutPlanDto generateAndSaveWorkoutPlan(WorkoutRequest request) {
         try {
-            var plan = geminiService.generateAndSaveWorkoutPlan(request);
+            WorkoutPlan plan = geminiService.generateAndSaveWorkoutPlan(request);
             return modelMapper.map(plan, WorkoutPlanDto.class);
         } catch (Exception e) {
             log.error("Error generating workout plan", e);

@@ -10,9 +10,9 @@ import java.util.List;
 @Entity
 @Data
 public class WorkoutPlan {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private String username;
 
     // **NEW FIELD ADDED** to match the database table
     private int durationWeeks;
