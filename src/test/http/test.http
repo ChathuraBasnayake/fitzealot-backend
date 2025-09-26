@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:8084
+@username = CB123
+
+### Create user details
+POST {{baseUrl}}/user-details/create
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "{{username}}",
+  "height": 175.3,
+  "weight": 68.2,
+  "age": 28,
+  "goal": "maintain"
+}
+
+### Get user details by username
+GET {{baseUrl}}/user-details/get/{{username}}
+Accept: application/json
