@@ -8,6 +8,8 @@ import com.fitzealot.fitnessService.model.entity.DailyWorkout;
 import com.fitzealot.fitnessService.model.entity.WorkoutPlan;
 import com.fitzealot.fitnessService.repository.WorkoutPlanRepository;
 import com.fitzealot.fitnessService.services.custom.WorkoutPlanService;
+import com.fitzealot.fitnessService.util.EmailService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,6 +25,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     private final ModelMapper modelMapper;
     private final GeminiService geminiService;
     private final WorkoutPlanRepository workoutPlanRepository;
+    private final EmailService emailService;
 
     @Override
     public WorkoutPlanDto generateAndSaveWorkoutPlan(WorkoutRequest request) {
@@ -93,5 +96,12 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
             throw new ResourceNotFoundException("Workout plan not found with id: " + id);
         }
         workoutPlanRepository.deleteById(id);
+    }
+
+    @Override
+    public void sendWorkoutPlanEmail(String to, String username) throws MessagingException {
+
+        emailService.sendSimpleMail(to, get(username));
+
     }
 }

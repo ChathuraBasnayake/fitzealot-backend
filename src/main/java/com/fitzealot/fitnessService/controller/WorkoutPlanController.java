@@ -79,6 +79,21 @@ public class WorkoutPlanController {
         }
     }
 
+    @GetMapping("/send-email")
+    public ResponseEntity<Void> sendWorkoutPlanEmail(
+            @RequestParam String to,
+            @RequestParam String username) {
+        try {
+            workoutPlanService.sendWorkoutPlanEmail(to, username);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error sending workout plan email to: {}", to, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+
     @GetMapping("/get-all")
     public ResponseEntity<List<WorkoutPlanDto>> getAllWorkoutPlans() {
         try {
