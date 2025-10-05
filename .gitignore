@@ -1,0 +1,56 @@
+# Node modules
+/node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+.pnp/
+.pnp.js
+
+# Optional npm cache
+.npm
+
+# Build output
+/dist/
+/build/
+/.cache/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Environment files (keep secrets out of git)
+.env
+.env.local
+.env.*.local
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.temp
+*.swp
+
+# Misc
+*.log
+
+# Ignore local node repl history
+.node_repl_history
+
+# By default do not ignore package-lock.json or pnpm-lock.yaml
+# (lockfiles should be committed to ensure reproducible installs)
